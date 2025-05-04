@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylish Tic-Tac-Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #1a1a2e, #16213e);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 5px rgba(255, 204, 0, 0.5);
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(3, 120px);
+            grid-gap: 15px;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .cell {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.2);
+            font-size: 3rem;
+            font-weight: bold;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .cell:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .cell.x { color: #f39c12; }
+        .cell.o { color: #3498db; }
+
+        .message {
+            font-size: 1.8rem;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 1.3rem;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 30px;
+            transition: 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic-Tac-Toe</h1>
+    <div class="game-container" id="gameBoard"></div>
+    <p class="message" id="message">Player X's turn</p>
+    <button class="reset-btn" onclick="resetGame()">Reset Game</button>
+
+    <script>
+        const board = Array(9).fill("");
+        let currentPlayer = "X";
+        let gameActive = true;
+
+        function initializeBoard() {
+            const gameBoard = document.getElementById("gameBoard");
+            gameBoard.innerHTML = "";
+            board.forEach((_, i) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.setAttribute("data-index", i);
+                cell.onclick = () => handleClick(cell, i);
+                gameBoard.appendChild(cell);
+            });
+        }
+
+        function handleClick(cell, index) {
+            if (!board[index] && gameActive) {
+                board[index] = currentPlayer;
+                cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer.toLowerCase());
+
+                if (checkWinner()) {
+                    document.getElementById("message").textContent = `Player ${currentPlayer} Wins! 🎉`;
+                    gameActive = false;
+                } else if (board.every(cell => cell !== "")) {
+                    document.getElementById("message").textContent = "It's a Draw! 🤝";
+                    gameActive = false;
+                } else {
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                    document.getElementById("message").textContent = `Player ${currentPlayer}'s turn`;
+                }
+            }
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]
+            ];
+            return winPatterns.some(pattern => 
+                board[pattern[0]] && board[pattern[0]] === board[pattern[1]] && board[pattern[0]] === board[pattern[2]]
+            );
+        }
+
+        function resetGame() {
+            board.fill("");
+            currentPlayer = "o";
+            gameActive = true;
+            document.getElementById("message").textContent = `Player X's turn`;
+            initializeBoard();
+        }
+
+        initializeBoard();
+    </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation & Stopwatch</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            text-align: center;
+            padding-top: 60px; /* Adjust for fixed navbar */
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #343a40;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .navbar a {
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: color 0.3s ease-in-out;
+        }
+
+        .navbar a:hover {
+            color: #ffc107;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        #stopwatch-section {
+            margin-top: 2rem;
+        }
+
+        /* Stopwatch */
+        .stopwatch {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            text-align: center;
+            display: inline-block;
+        }
+
+        .time {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #495057;
+        }
+
+        .controls button {
+            padding: 0.75rem 1.5rem;
+            margin: 0 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .start { background-color: #28a745; color: white; }
+        .start:hover { background-color: #1e7e34; }
+
+        .pause { background-color: #dc3545; color: white; }
+        .pause:hover { background-color: #c82333; }
+
+        .reset { background-color: #007bff; color: white; }
+        .reset:hover { background-color: #0056b3; }
+
+        .lap-times {
+            margin-top: 1.5rem;
+            text-align: left;
+            color: #495057;
+        }
+
+        .lap-times h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .lap-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .lap-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .lap-list li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+        <a href="#home">Home</a>
+        <a href="#stopwatch-section">Stopwatch</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+    </nav>
+
+    <div class="content">
+        <h1>Welcome to Our Website</h1>
+        <p>Explore the features below, including a handy stopwatch.</p>
+    </div>
+
+    <section id="stopwatch-section">
+        <div class="stopwatch">
+            <div class="time" id="display">00:00:00</div>
+            <div class="controls">
+                <button class="start" onclick="startStopwatch()">Start</button>
+                <button class="pause" onclick="pauseStopwatch()">Pause</button>
+                <button class="reset" onclick="resetStopwatch()">Reset</button>
+                <button onclick="lapTime()">Lap</button>
+            </div>
+            <div class="lap-times">
+                <h2>Lap Times</h2>
+                <ul class="lap-list" id="laps"></ul>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const navbar = document.getElementById("navbar");
+
+        window.addEventListener('scroll', () => {
+            navbar.style.backgroundColor = window.scrollY > 50 ? "#495057" : "#343a40";
+        });
+
+        let timerInterval;
+        let startTime;
+        let elapsedTime = 0;
+
+        function timeToString(time) {
+            const totalSeconds = Math.floor(time / 1000);
+            const seconds = String(totalSeconds % 60).padStart(2, '0');
+            const minutes = String(Math.floor(totalSeconds / 60) % 60).padStart(2, '0');
+            const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+
+        function startStopwatch() {
+            if (!timerInterval) {
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    document.getElementById("display").textContent = timeToString(elapsedTime);
+                }, 1000);
+            }
+        }
+
+        function pauseStopwatch() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        function resetStopwatch() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedTime = 0;
+            document.getElementById("display").textContent = "00:00:00";
+            document.getElementById("laps").innerHTML = "";
+        }
+
+        function lapTime() {
+            const lapTime = timeToString(elapsedTime);
+            const lapList = document.getElementById("laps");
+            const newLap = document.createElement("li");
+            newLap.textContent = lapTime;
+            lapList.appendChild(newLap);
+        }
+    </script>
+</body>
+</html>
